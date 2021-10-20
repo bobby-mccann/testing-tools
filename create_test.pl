@@ -35,5 +35,6 @@ while(<FH>){
             system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 });
         }
         system(qq{ idea $filename });
+        exit 0;
     }
 }

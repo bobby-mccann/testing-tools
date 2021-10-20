@@ -23,21 +23,17 @@ while(<FH>){
         make_path($filename);
         $filename .= $function_name . ".t";
         print $filename . "\n";
-        copy("/Users/bobbymccann/Code/testing-tools/test_template.t", $filename);
+        unless (-e $filename) {
+            copy("/Users/bobbymccann/Code/testing-tools/test_template.t", $filename);
 
-        $filename =~ qr#(.*/secure).+#;
-        my $secure_repo_path = $1;
-        system(qq{
-            git -C $secure_repo_path add $filename
-        });
-        system(qq{
-            idea $filename
-        });
+            $filename =~ qr#(.*/secure).+#;
+            my $secure_repo_path = $1;
+            system(qq{ git -C $secure_repo_path add $filename });
 
-        # Path for aggregate_tests.pl has to be relative to the test directory
-        $filename =~ qr#secure/t/(.+)#;
-        system(qq{
-            $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1
-        });
+            # Path for aggregate_tests.pl has to be relative to the test directory
+            $filename =~ qr#secure/t/(.+)#;
+            system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 });
+        }
+        system(qq{ idea $filename });
     }
 }

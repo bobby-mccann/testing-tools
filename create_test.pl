@@ -18,14 +18,26 @@ while(<FH>){
         my $function_name = $1;
         return unless defined $function_name;
 
-        $filename =~ s#lib#t/lib#;
+        $filename =~ s#/secure#/secure/t#;
         $filename =~ s#.pm#/#;
         make_path($filename);
         $filename .= $function_name . ".t";
         print $filename . "\n";
         copy("/Users/bobbymccann/Code/testing-tools/test_template.t", $filename);
+
+        $filename =~ qr#(.*/secure).+#;
+        my $secure_repo_path = $1;
         system(qq{
-            open -na "IntelliJ IDEA.app" --args "$filename"
+            git -C $secure_repo_path add $filename
+        });
+        system(qq{
+            idea $filename
+        });
+
+        # Path for aggregate_tests.pl has to be relative to the test directory
+        $filename =~ qr#secure/t/(.+)#;
+        system(qq{
+            $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1
         });
     }
 }

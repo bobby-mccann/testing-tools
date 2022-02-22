@@ -1,54 +1,72 @@
 #!/usr/bin/perl
 use strict;
 use warnings FATAL => 'all';
-use Path::Tiny;
+use Path::Tiny 'path';
 
 my $filename = shift or die "needs filename";
-my $line_number = shift or die "needs line number";
+my $Line_Number = shift or die "needs line number";
+my $editor = shift || 'vi';
 
-my $test_template = "/Users/bobbymccann/Code/testing-tools/test_template.t";
+my $Test_Template = "/Users/bobbymccann/Code/testing-tools/test_template.t";
 
-open(FH, '<', $filename) or die $!;
+my @Lines = path($filename)->lines_utf8;
 
-my $current_line = 0;
-my $package_name;
-while(<FH>){
-    $current_line += 1;
+my $package_name = get_package_name(@Lines);
+my $function_name = get_function_name($Line_Number, @Lines);
+exit 1 unless defined $function_name;
 
-    unless (defined($package_name)) {
+my $test_directory = path(get_test_directory($filename));
+$test_directory->mkpath;
+my $test_path = $test_directory->child("$function_name.t");
+
+my $secure_repo_path = get_repo_directory($filename);
+
+unless (-e $test_path) {
+    my $template = path($Test_Template)->slurp_utf8;
+    $template =~ s/package_name/$package_name/g;
+    $template =~ s/function_name/$function_name/g;
+    $test_path->spew_utf8($template);
+
+    system qq{ git -C $secure_repo_path add $filename };
+
+    # Path for aggregate_tests.pl has to be relative to the test directory
+    $test_path =~ qr#secure/t/(.+)#;
+    system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 -r $secure_repo_path });
+}
+system qq{ $editor $test_path };
+system qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -c -r $secure_repo_path };
+
+sub get_package_name {
+    my @lines = @_;
+    for (@lines) {
         $_ =~ /package (.+);$/;
-        $package_name = $1 if defined($1);
+        return $1 if defined($1);
     }
+}
 
-    if ($current_line == $line_number) {
-        print "found line\n";
-        $_ =~ /.*(sub|has) (\S+)/;
-        my $function_name = $2;
-        return unless defined $function_name;
+sub get_function_name {
+    my $line_number = shift;
+    my @lines = @_;
+    my $line = $lines[$line_number-1];
 
-        $filename =~ s#/secure#/secure/t# unless $filename =~ qr#/t/#;
-        $filename =~ s#.pm#/#;
-        Path::Tiny::path($filename)->mkpath;
-        $filename .= $function_name . ".t";
-        print $filename . "\n";
+    print $line;
+    $line =~ /.*(sub|has) (\S+)/;
+    return $2;
+}
 
-        $filename =~ qr#(.*/secure).+#;
-        my $secure_repo_path = $1;
+sub get_test_directory {
+    my $package_path = shift;
+    # Should go in /secure/t instead of /secure
+    $package_path =~ s#/secure#/secure/t#
+        # Unless we're testing something in /t/
+        unless $package_path =~ qr#/t/#;
+    # Test directory doesn't have file extension
+    $package_path =~ s#.pm#/#;
+    return $package_path;
+}
 
-        unless (-e $filename) {
-            my $template = Path::Tiny::path($test_template)->slurp_utf8;
-            $template =~ s/package_name/$package_name/g;
-            $template =~ s/function_name/$function_name/g;
-            Path::Tiny::path($filename)->spew_utf8($template);
-
-            system(qq{ git -C $secure_repo_path add $filename });
-
-            # Path for aggregate_tests.pl has to be relative to the test directory
-            $filename =~ qr#secure/t/(.+)#;
-            system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 -r $secure_repo_path });
-        }
-        system(qq{ idea $filename });
-        system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -c -r $secure_repo_path });
-        exit 0;
-    }
+sub get_repo_directory {
+    my $package_path = shift;
+    $package_path =~ qr#(.*/secure).+#;
+    return $1;
 }

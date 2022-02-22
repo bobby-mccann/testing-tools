@@ -31,20 +31,24 @@ while(<FH>){
         Path::Tiny::path($filename)->mkpath;
         $filename .= $function_name . ".t";
         print $filename . "\n";
+
+        $filename =~ qr#(.*/secure).+#;
+        my $secure_repo_path = $1;
+
         unless (-e $filename) {
             my $template = Path::Tiny::path($test_template)->slurp_utf8;
-            $template =~ s/<package_name>/$package_name/g;
+            $template =~ s/package_name/$package_name/g;
+            $template =~ s/function_name/$function_name/g;
             Path::Tiny::path($filename)->spew_utf8($template);
 
-            $filename =~ qr#(.*/secure).+#;
-            my $secure_repo_path = $1;
             system(qq{ git -C $secure_repo_path add $filename });
 
             # Path for aggregate_tests.pl has to be relative to the test directory
             $filename =~ qr#secure/t/(.+)#;
-            system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 });
+            system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -a $1 -r $secure_repo_path });
         }
         system(qq{ idea $filename });
+        system(qq{ $secure_repo_path/bin/dev/tools/aggregate_tests.pl -c -r $secure_repo_path });
         exit 0;
     }
 }

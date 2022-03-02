@@ -27,7 +27,7 @@ unless (-e $test_path) {
     $template =~ s/function_name/$function_name/g;
     $test_path->spew_utf8($template);
 
-    system qq{ git -C $secure_repo_path add $filename };
+    system qq{ git -C $secure_repo_path add $test_path };
 
     # Path for aggregate_tests.pl has to be relative to the test directory
     $test_path =~ qr#secure/t/(.+)#;

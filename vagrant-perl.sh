@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+echo "$*" >> ~/.vagrant_perl_history
+
 # Camelcade is doing a version check - trick it into thinking it's my local perl.
 if [[ $* == "-MConfig -e print q{perl}.chr(10);do {print;print chr(10)} for @Config{qw/version archname/}" ]]
 then

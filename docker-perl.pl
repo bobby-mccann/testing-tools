@@ -2,7 +2,7 @@
 use Config;
 use Path::Tiny 'path';
 use Capture::Tiny::Extended 'capture';
-use IPC::Open2;
+use IPC::Open3;
 use 5.20.0;
 
 my $args_as_string = join(' ', @ARGV);
@@ -29,7 +29,7 @@ my $command = join ' ', @args;
 
 path("~/.docker_perl_history")->append($command . "\n");
 
-my $pid = open2('>&STDOUT', undef, @args);
+my $pid = open3(undef, '>&STDOUT', '>&STDOUT', @args);
 waitpid($pid, 0);
 
 # my ($stdout, $stderr) = capture sub {

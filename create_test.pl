@@ -3,11 +3,11 @@ use strict;
 use warnings FATAL => 'all';
 use Path::Tiny 'path';
 
+$ENV{DEVELOPMENT} = 1;
+
 my $filename = shift or die "needs filename";
 my $Line_Number = shift or die "needs line number";
 my $editor = shift || 'vi';
-
-my $Test_Template = "/Users/bobbymccann/Code/testing-tools/test_template.t";
 
 my @Lines = path($filename)->lines_utf8;
 
@@ -22,6 +22,7 @@ my $test_path = $test_directory->child("$function_name.t");
 my $secure_repo_path = get_repo_directory($filename);
 
 unless (-e $test_path) {
+    my $Test_Template = "$secure_repo_path/../testing-tools/test_template.t";
     my $template = path($Test_Template)->slurp_utf8;
     $template =~ s/package_name/$package_name/g;
     $template =~ s/function_name/$function_name/g;

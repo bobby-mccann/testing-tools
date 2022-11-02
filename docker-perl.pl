@@ -5,6 +5,10 @@ use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
+my $srd = open3(undef, undef, undef, qw(perl /home/bobby/Work/docker-development-environment/sr-docker.pl up));
+waitpid($srd, 0);
+
 my $args_as_string = join(' ', @ARGV);
 
 my @perl_exec = (

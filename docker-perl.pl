@@ -5,19 +5,22 @@ use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 
-$ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
-my $srd = open3(undef, undef, undef, qw(perl /home/bobby/Work/docker-development-environment/sr-docker.pl up));
-waitpid($srd, 0);
+# $ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
+# my $srd = open3(undef, undef, undef, qw(perl /home/bobby/Work/docker-development-environment/sr-docker.pl up));
+# waitpid($srd, 0);
 
 my $args_as_string = join(' ', @ARGV);
 
+my $ip = (split /\n/, `ifconfig | grep inet | awk '{print \$2}'`)[0];
+
 my @perl_exec = (
-    qw{/usr/local/bin/docker exec},
-    # '-e', 'PERL5_DEBUG_HOST=172.16.25.8',
-    # '-e', 'PERL5_DEBUG_PORT=12345',
-    # '-e', 'PERL5_DEBUG_ROLE=server',
+    '/usr/bin/docker', 'exec',
+    '-e', "PROVE_PASS_PERL5OPT=$ENV{PROVE_PASS_PERL5OPT}",
+    '-e', "PERL5_DEBUG_HOST=$ip",
+    '-e', 'PERL5_DEBUG_PORT=12345',
+    '-e', 'PERL5_DEBUG_ROLE=client',
     'dev-box',
-    '/usr/bin/perl',
+    # '/usr/bin/perl',
     # '-d:Camelcadedb'
 );
 
@@ -28,6 +31,7 @@ if ($args_as_string =~ /-le print for \@INC/) {
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);
+say join ' ', @args;
 
 my $command = join ' ', @args;
 

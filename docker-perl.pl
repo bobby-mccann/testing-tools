@@ -31,7 +31,7 @@ if ($args_as_string =~ /-le print for \@INC/) {
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);
-say join ' ', @args;
+# say join ' ', @args;
 
 my $command = join ' ', @args;
 

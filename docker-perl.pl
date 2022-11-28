@@ -5,9 +5,10 @@ use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 
-# $ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
-# my $srd = open3(undef, undef, undef, qw(perl /home/bobby/Work/docker-development-environment/sr-docker.pl up));
-# waitpid($srd, 0);
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
+
+`perl /home/bobby/Work/docker-development-environment/sr-docker.pl up`
+    unless `docker ps` =~ /dev-box/;
 
 my $args_as_string = join(' ', @ARGV);
 
@@ -20,8 +21,6 @@ my @perl_exec = (
     '-e', 'PERL5_DEBUG_PORT=12345',
     '-e', 'PERL5_DEBUG_ROLE=client',
     'dev-box',
-    # '/usr/bin/perl',
-    # '-d:Camelcadedb'
 );
 
 if ($args_as_string =~ /-le print for \@INC/) {

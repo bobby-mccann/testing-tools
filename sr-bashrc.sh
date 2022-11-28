@@ -12,4 +12,4 @@ alias failed_tests="$GIT_REPOS/testing-tools/failed_tests.pl"
 # shellcheck disable=SC2139
 alias wft="failed_tests -w"
 # shellcheck disable=SC2139
-alias srvpn="$GIT_REPOS/testing-tools/vpn-connect.sh"
+alias srvpn="$GIT_REPOS/testing-tools/vpn-connect.pl"

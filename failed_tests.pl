@@ -109,7 +109,10 @@ sub print_run {
     $run->{short_hash} = substr $run->{headSha}, 0, 7; # short version of git hash is 7 chars
     $output .= colored ['bold black on_cyan'], " <$run->{short_hash}> ";
 
-    if ($run->{conclusion} ne 'success') {
+    if ($run->{status} ne 'completed') {
+        $output .= colored ['bold black on_yellow'], " … $title ";
+    }
+    elsif ($run->{conclusion} ne 'success') {
         $output .= colored ['bold black on_red'], " ✗ $title ";
         my $agg_file = aggregate_file_to_create($run);
 

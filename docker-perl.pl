@@ -14,8 +14,14 @@ my $args_as_string = join(' ', @ARGV);
 
 my $ip = (split /\n/, `ifconfig | grep inet | awk '{print \$2}'`)[0];
 
+my @envs;
+# for (keys %ENV) {
+#     push @envs, "-e $_=$ENV{$_}";
+# }
+
 my @perl_exec = (
-    '/usr/bin/docker', 'exec',
+    '/usr/bin/docker', 'exec', '-i',
+    @envs,
     '-e', "PROVE_PASS_PERL5OPT=$ENV{PROVE_PASS_PERL5OPT}",
     '-e', "PERL5_DEBUG_HOST=$ip",
     '-e', 'PERL5_DEBUG_PORT=12345',
@@ -23,9 +29,8 @@ my @perl_exec = (
     'dev-box',
 );
 
-if ($args_as_string =~ /-le print for \@INC/) {
-    @perl_exec = qw(perl);
-}
+@perl_exec = qw(/usr/bin/perl) if ($args_as_string =~ /-le print for \@INC/) ||
+    $args_as_string =~ qr#/usr/local/bin/perlcritic#;
 
 my @args = map {
     s+^/.*/secure/+/secure/+r;
@@ -33,10 +38,11 @@ my @args = map {
 # say join ' ', @args;
 
 my $command = join ' ', @args;
+# say $command;
 
 path("~/.docker_perl_history")->append($command . "\n");
 
-my $pid = open3(undef, '>&STDOUT', '>&STDOUT', @args);
+my $pid = open3('<&STDIN', '>&STDOUT', '>&STDOUT', @args);
 waitpid($pid, 0);
 
 # my ($stdout, $stderr) = capture sub {

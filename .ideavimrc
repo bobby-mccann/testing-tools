@@ -1,0 +1,104 @@
+"" Source your .vimrc
+"source ~/.vimrc
+
+"" -- Suggested options --
+" Show a few lines of context around the cursor. Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+set scrolloff=2
+
+" Do incremental searching.
+set incsearch
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+set number
+set relativenumber
+
+set ideajoin
+set ideamarks
+
+set argtextobj
+set commentary
+set surround
+set textobj-entire
+set visualbell
+
+
+nnoremap ; A;<ESC>
+
+let mapleader="\<Space>"
+
+imap <C-v> <ESC>:action EditorPaste<cr>i
+
+" Leader mappings
+
+" File Actions
+nmap <Leader>fo :action GotoFile<cr>
+nmap <Leader>ff :action FindInPath<cr>
+nmap <Leader>fs :action NewScratchFile<cr>
+nmap <Leader>fn :action NewFile<cr>
+
+" Run
+nmap <Leader>rr :action RunClass<cr>
+nmap <Leader>rc :action ChooseRunConfiguration<cr>
+nmap <Leader>r<Leader> :action Run<cr>
+
+" Debug
+nmap <Leader>dc :action ChooseDebugConfiguration<cr>
+nmap <Leader>dd :action DebugClass<cr>
+nmap <Leader>d<Leader> :action Debug<cr>
+
+" Tests
+nmap <Leader>tt :action Tool_External Tools_Create Test<cr>
+nmap <Leader>tf :action Tool_External Tools_Show Failed Tests<cr>
+nmap <Leader>ts :e /secure/scratch.t<cr>
+
+" Git
+nmap <Leader>gb :action Git.ShowBranches<cr>
+nmap <Leader>gg :action Vcs.QuickListPopupAction<cr>
+nmap <Leader>ga :action Annotate<cr>
+nmap <Leader>gc :action CheckinProject<cr>
+nmap <Leader>gpr :action Tool_External Tools_Create PR<cr>
+nmap <Leader>gpp :action Vcs.Push<cr>
+nmap <Leader>gu :action Vcs.UpdateProject<cr>
+nmap <Leader>gy :action com.github.kawamataryo.copygitlink.CopyPermalink<cr>
+
+" IdeaVim
+nmap <Leader>vr :action IdeaVim.ReloadVimRc.reload<cr>
+nmap <Leader>vm :e ~/.ideavimrc<cr>
+nmap <Leader>vt :action VimFindActionIdAction<cr>
+
+" Tasks
+nmap <Leader>kf :action tasks.goto<cr>
+
+" Buffers
+nmap <Leader>bn :action NextTab<cr>
+nmap <Leader>bp :action PreviousTab<cr>
+
+" Window
+nmap <Leader>wx :action CloseContent<cr>
+nmap <Leader>wX :action ReopenClosedTab<cr>
+
+nmap <Leader>ww :action JumpToLastWindow<cr>
+
+nmap <Leader>wn :action NextSplitter<cr>
+nmap <Leader>wp :action PrevSplitter<cr>
+
+nmap <Leader>wl :action MoveTabRight<cr>
+nmap <Leader>wh :action MoveTabLeft<cr>
+nmap <Leader>wj :action MoveTabUp<cr>
+nmap <Leader>wk :action MoveTabDown<cr>
+
+nmap <Leader>wsj :action SplitHorizontally<cr>
+nmap <Leader>wsk :action SplitHorizontally<cr>
+nmap <Leader>wsl :action SplitVertically<cr>
+nmap <Leader>wsh :action SplitVertically<cr>
+
+nmap <Leader>wu :action Unsplit<cr>
+
+" Help
+nmap <Leader>?? :action Tool_External Tools_Show Leader Actions<cr>
+
+" Misc
+nmap <Leader><Leader>l :action Tool_External Tools_Show Localisation<cr>

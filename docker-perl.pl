@@ -29,8 +29,9 @@ my @perl_exec = (
     'dev-box',
 );
 
-@perl_exec = qw(/usr/bin/perl) if ($args_as_string =~ /-le print for \@INC/) ||
-    $args_as_string =~ qr#/usr/local/bin/perlcritic#;
+@perl_exec = qw(perl) if ($args_as_string =~ /-le print for \@INC/) ||
+    $args_as_string =~ qr#/usr/local/bin/perlcritic# ||
+    $args_as_string =~ /-MConfig/;
 
 my @args = map {
     s+^/.*/secure/+/secure/+r;

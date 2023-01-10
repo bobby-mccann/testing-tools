@@ -7,7 +7,7 @@ use 5.20.0;
 
 $ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
 
-`perl /home/bobby/Work/docker-development-environment/sr-docker.pl up`
+`perl $ENV{GIT_REPOS}/docker-development-environment/sr-docker.pl up`
     unless `docker ps` =~ /dev-box/;
 
 my $args_as_string = join(' ', @ARGV);
@@ -15,9 +15,6 @@ my $args_as_string = join(' ', @ARGV);
 my $ip = (split /\n/, `ifconfig | grep inet | awk '{print \$2}'`)[0];
 
 my @envs;
-# for (keys %ENV) {
-#     push @envs, "-e $_=$ENV{$_}";
-# }
 
 my @perl_exec = (
     '/usr/bin/docker', 'exec', '-i',
@@ -29,32 +26,19 @@ my @perl_exec = (
     'dev-box',
 );
 
+# Use system perl for some things:
 @perl_exec = qw(perl) if ($args_as_string =~ /-le print for \@INC/) ||
     $args_as_string =~ qr#/usr/local/bin/perlcritic# ||
     $args_as_string =~ /-MConfig/;
 
+# Map secure directory to /secure:
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);
-# say join ' ', @args;
 
 my $command = join ' ', @args;
-# say $command;
 
 path("~/.docker_perl_history")->append($command . "\n");
 
 my $pid = open3('<&STDIN', '>&STDOUT', '>&STDOUT', @args);
 waitpid($pid, 0);
-
-# my ($stdout, $stderr) = capture sub {
-#     system($command);
-# }, {
-#     stdout => <STDOUT>,
-# };
-
-# my $secure = path($ENV{SR_ROOT})->child('secure')->stringify;
-
-# $stdout =~ s+/secure+$secure+g;
-#
-# print STDOUT $stdout;
-# print STDERR $stderr;

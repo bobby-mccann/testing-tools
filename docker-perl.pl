@@ -28,9 +28,12 @@ my @perl_exec = (
     'dev-box',
 );
 
-@perl_exec = qw(/usr/bin/perl) if ($args_as_string =~ /-le print for \@INC/) ||
-    $args_as_string =~ qr#/usr/local/bin/perlcritic#;
+# Use system perl for some things:
+@perl_exec = qw(perl) if ($args_as_string =~ /-le print for \@INC/) ||
+    $args_as_string =~ qr#/usr/local/bin/perlcritic# ||
+    $args_as_string =~ /-MConfig/;
 
+# Map secure directory to /secure:
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);

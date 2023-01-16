@@ -5,14 +5,13 @@ use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 
-$ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
+my $git_repos = path($0)->parent(2)->realpath;
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} = $git_repos;
 
-`perl /home/bobby/Work/docker-development-environment/sr-docker.pl up`
+`perl $ENV{GIT_REPOS}/docker-development-environment/sr-docker.pl up`
     unless `docker ps` =~ /dev-box/;
 
 my $args_as_string = join(' ', @ARGV);
-
-my $ip = (split /\n/, `ifconfig | grep inet | awk '{print \$2}'`)[0];
 
 my @envs;
 # for (keys %ENV) {
@@ -23,7 +22,7 @@ my @perl_exec = (
     '/usr/bin/docker', 'exec', '-i',
     @envs,
     '-e', "PROVE_PASS_PERL5OPT=$ENV{PROVE_PASS_PERL5OPT}",
-    '-e', "PERL5_DEBUG_HOST=$ip",
+    '-e', "PERL5_DEBUG_HOST=host.docker.internal",
     '-e', 'PERL5_DEBUG_PORT=12345',
     '-e', 'PERL5_DEBUG_ROLE=client',
     'dev-box',
@@ -42,9 +41,10 @@ my $command = join ' ', @args;
 
 path("~/.docker_perl_history")->append($command . "\n");
 
-my $pid = open3('<&STDIN', '>&STDOUT', '>&STDOUT', @args);
+my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
 waitpid($pid, 0);
 
+# TODO: Replace /secure in output with local secure path - below works but doesn't stream
 # my ($stdout, $stderr) = capture sub {
 #     system($command);
 # }, {

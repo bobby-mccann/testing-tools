@@ -37,7 +37,7 @@ my @perl_exec = (
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);
-# say join ' ', @args;
+say join ' ', @args;
 
 my $command = join ' ', @args;
 # say $command;

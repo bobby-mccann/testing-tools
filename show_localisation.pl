@@ -18,12 +18,17 @@ my $context = $1;
 say "Context: $context";
 $context = "'$context'";
 
+my $dollar_underscore = '$_';
+$ENV{_} = '$_';
 #@inject PERL5
 my $perl = qq{
 use SR::Localisation::Util;
 use SR::Encode::Util qw/encode_utf8/;
+use 5.20.0;
 
-print SR::Localisation::Util::show_localisation($context);
+for (SR::Localisation::Util::locales) {
+    say $dollar_underscore . ': ' . SR::Localisation::Util::get_translation($dollar_underscore, $context);
+}
 };
 
 say `./docker-perl.pl perl -e "$perl"`;

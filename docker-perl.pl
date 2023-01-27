@@ -1,11 +1,12 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 use Config;
-use Path::Tiny 'path';
-use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 
-$ENV{SR_ROOT} = $ENV{GIT_REPOS} = "/home/bobby/Work";
+$0 =~ s#/[^/]+/[^/]*$#/#;
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} = $0;
 
 `perl $ENV{GIT_REPOS}/docker-development-environment/sr-docker.pl up`
     unless `docker ps` =~ /dev-box/;
@@ -38,7 +39,7 @@ my @args = map {
 
 my $command = join ' ', @args;
 
-path("~/.docker_perl_history")->append($command . "\n");
+# path("~/.docker_perl_history")->append($command . "\n");
 
 my $pid = open3('<&STDIN', '>&STDOUT', '>&STDOUT', @args);
 waitpid($pid, 0);

@@ -2,8 +2,6 @@
 use strict;
 use warnings;
 use Config;
-use Path::Tiny 'path';
-use Capture::Tiny::Extended 'capture';
 use IPC::Open3;
 use 5.20.0;
 

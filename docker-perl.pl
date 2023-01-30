@@ -17,6 +17,9 @@ my $args_as_string = join(' ', @ARGV);
 
 my @envs;
 
+# This variable is set by the IntelliJ plugin to pass perl options to the prove command.
+# If it's not set, we fill it with an empty string so as not to throw an error.
+$ENV{PROVE_PASS_PERL5OPT} ||= '';
 my @perl_exec = (
     '/usr/bin/docker', 'exec', '-i',
     @envs,

@@ -41,5 +41,6 @@ my @args = map {
 my $command = join ' ', @args;
 path("~/.docker_perl_history")->append($command . "\n");
 
-my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
+system "$command";
+# my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
 waitpid($pid, 0);

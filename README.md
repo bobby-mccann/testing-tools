@@ -21,6 +21,10 @@ This is a script for running Perl code from the IntelliJ plugin.
 Then choose the docker-perl.pl script as the interpreter. It is a script designed to trick
 IntelliJ into thinking it's running local perl, but it's actually using the dev-box.
 
+## Perl5 Libraries
+
+![img.png](img.png)
+
 ## External Tools
 
 TODO: Export my external tools.

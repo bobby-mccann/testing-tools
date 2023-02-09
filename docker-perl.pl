@@ -14,7 +14,6 @@ $ENV{SR_ROOT} = $ENV{GIT_REPOS} = $1;
     unless `docker ps` =~ /dev-box/;
 
 my $args_as_string = join(' ', @ARGV);
-$args_as_string =~ s#\s.*/bin/prove\s#/usr/bin/prove#;
 
 my $local_docker_path = `which docker`;
 chomp $local_docker_path;
@@ -43,6 +42,11 @@ my @perl_exec = (
 my @args = map {
     s+^/.*/secure/+/secure/+r;
 } (@perl_exec, @ARGV);
+
+# Replace local prove with /usr/bin/prove
+@args = map {
+    s+^/.*/prove+/usr/bin/prove+r;
+} @args;
 
 my $command = join ' ', @args;
 path("~/.docker_perl_history")->append($command . "\n");

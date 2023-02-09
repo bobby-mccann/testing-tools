@@ -6,12 +6,18 @@ use IPC::Open3;
 use Path::Tiny 'path';
 use 5.20.0;
 
-$ENV{SR_ROOT} = $ENV{GIT_REPOS} = path($0)->parent->stringify;
+my $script_path = $0;
+$script_path =~ qr#^(.+)/testing-tools#;
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} = $1;
 
 `perl $ENV{GIT_REPOS}/docker-development-environment/sr-docker.pl up`
     unless `docker ps` =~ /dev-box/;
 
 my $args_as_string = join(' ', @ARGV);
+$args_as_string =~ s#\s.*/bin/prove\s#/usr/bin/prove#;
+
+my $local_docker_path = `which docker`;
+chomp $local_docker_path;
 
 my @envs;
 
@@ -19,7 +25,7 @@ my @envs;
 # If it's not set, we fill it with an empty string so as not to throw an error.
 $ENV{PROVE_PASS_PERL5OPT} ||= '';
 my @perl_exec = (
-    '/usr/bin/docker', 'exec', '-i',
+    $local_docker_path, 'exec', '-i',
     @envs,
     '-e', "PROVE_PASS_PERL5OPT=$ENV{PROVE_PASS_PERL5OPT}",
     '-e', "PERL5_DEBUG_HOST=host.docker.internal",
@@ -41,6 +47,5 @@ my @args = map {
 my $command = join ' ', @args;
 path("~/.docker_perl_history")->append($command . "\n");
 
-system "$command";
-# my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
-# waitpid($pid, 0);
+my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
+waitpid($pid, 0);

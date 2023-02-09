@@ -43,4 +43,4 @@ path("~/.docker_perl_history")->append($command . "\n");
 
 system "$command";
 # my $pid = open3('<&STDIN', '>&STDOUT', '>&STDERR', @args);
-waitpid($pid, 0);
+# waitpid($pid, 0);

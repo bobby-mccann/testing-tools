@@ -4,7 +4,6 @@
 # source $HOME/Work/testing-tools/sr-bashrc.sh
 
 export DEVELOPMENT=1
-export GIT_REPOS=~/Work
 export SR_ROOT=$GIT_REPOS
 
 alias srd="$GIT_REPOS/docker-development-environment/sr-docker.pl"

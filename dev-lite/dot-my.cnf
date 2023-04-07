@@ -1,0 +1,5 @@
+[client]
+default-character-set=utf8
+host=mysql-db
+user=devadmin
+password=CJtwLpCjfQu92LGA

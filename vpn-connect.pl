@@ -37,13 +37,22 @@ I use this because the desktop version of forticlient is pretty bad.
 
 =cut
 
+# Allow passing --mobile argument to use the mobile VPN:
+my $mobile = 0;
+if ($ARGV[0] && $ARGV[0] eq '--mobile') {
+    $mobile = 1;
+}
+
 my $op_signin = `op signin`;
 $op_signin =~ /export (\S+)="(\S+)"/;
 $ENV{$1} = $2;
 
 my $vpn_creds = `op item get "Forticlient VPN"`;
+if ($mobile) {
+    my $vpn_creds = `op item get "MobileTesting VPN account"`;
+}
 $vpn_creds =~ /host:\s+(\S+)/;
-my $host = $1;
+my $host = $1 || 'https://vpn.spareroom.co.uk:10443';
 $vpn_creds =~ /username:\s+(\S+)/;
 my $username = $1;
 $vpn_creds =~ /password:\s+(\S+)/;

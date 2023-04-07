@@ -6,6 +6,8 @@ use Path::Tiny 'path';
 use 5.20.0;
 use SR::Encode::Util qw/decode_utf8 encode_utf8/;
 
+$ENV{GIT_REPOS} ||= '~/Work';
+
 my $filename = shift or die "needs filename";
 my $Line_Number = shift or die "needs line number";
 
@@ -31,4 +33,4 @@ for (SR::Localisation::Util::locales) {
 }
 };
 
-say `./docker-perl.pl perl -e "$perl"`;
+say `GIT_REPOS=~/Work ./docker-perl.pl perl -e "$perl"`;

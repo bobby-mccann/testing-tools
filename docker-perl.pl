@@ -8,12 +8,13 @@ use 5.20.0;
 
 my $script_path = $0;
 $script_path =~ qr#^(.+)/testing-tools#;
-$ENV{SR_ROOT} = $ENV{GIT_REPOS} = $1;
+$ENV{SR_ROOT} = $ENV{GIT_REPOS} ||= $1;
 
 `perl $ENV{GIT_REPOS}/docker-development-environment/sr-docker.pl up`
     unless `docker ps` =~ /dev-box/;
 
-my $args_as_string = join(' ', @ARGV);
+my $args_as_string = join(' ', map { "\"$_\"" } @ARGV);
+path("~/.docker_perl_history")->append($args_as_string . "\n");
 
 my $local_docker_path = `which docker`;
 chomp $local_docker_path;
@@ -26,8 +27,8 @@ $ENV{PROVE_PASS_PERL5OPT} ||= '';
 my @perl_exec = (
     $local_docker_path, 'exec', '-i',
     @envs,
-    '-e', "PROVE_PASS_PERL5OPT=$ENV{PROVE_PASS_PERL5OPT}",
-    '-e', "PERL5_DEBUG_HOST=host.docker.internal",
+    # '-e', "PROVE_PASS_PERL5OPT='$ENV{PROVE_PASS_PERL5OPT}'",
+    '-e', "PERL5_DEBUG_HOST=172.16.25.1",
     '-e', 'PERL5_DEBUG_PORT=12345',
     '-e', 'PERL5_DEBUG_ROLE=client',
     'dev-box',

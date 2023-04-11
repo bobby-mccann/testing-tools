@@ -50,16 +50,16 @@ nmap <Leader>dd :action DebugClass<cr>
 nmap <Leader>d<Leader> :action Debug<cr>
 
 " Tests
-nmap <Leader>tt :action Tool_External Tools_Create Test<cr>
-nmap <Leader>tf :action Tool_External Tools_Show Failed Tests<cr>
+nmap <Leader>tt :action Tool_Spareroom_Create Test<cr>
+nmap <Leader>tf :action Tool_Spareroom_Show Failed Tests<cr>
 nmap <Leader>ts :e /secure/scratch.t<cr>
 
 " Git
-nmap <Leader>gb :action Git.ShowBranches<cr>
+nmap <Leader>gb :action Git.Branches<cr>
 nmap <Leader>gg :action Vcs.QuickListPopupAction<cr>
 nmap <Leader>ga :action Annotate<cr>
 nmap <Leader>gc :action CheckinProject<cr>
-nmap <Leader>gpr :action Tool_External Tools_Create PR<cr>
+nmap <Leader>gpr :!gh pr create --web<cr>
 nmap <Leader>gpp :action Vcs.Push<cr>
 nmap <Leader>gu :action Vcs.UpdateProject<cr>
 nmap <Leader>gy :action com.github.kawamataryo.copygitlink.CopyPermalink<cr>

@@ -19,6 +19,7 @@ The following command builds an image and adds it to your local
 registry.
 
 ```shell
+cp $SR_ROOT/docker-development-environment/dev/dot-my.cnf $SR_ROOT/testing-tools/dev-lite/dot-my.cnf
 docker build dev-lite -t dev:lite
 ```
 

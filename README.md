@@ -31,13 +31,15 @@ docker build dev-lite -t dev:lite
 
 #### Run with network & volume parameters (making sure dev env is already up)
 
-![img_3.png](images/img_3.png)
+![img.png](images/img.png)
 
 ```
 --network
 docker-development-environment_spareroom
--v
-/[YOUR SR_ROOT]/secure:/opt/secure
+--env
+SR_ROOT=/intellijperl/home/bobby/Work
+--env
+NO_TEST_LIB=1
 ```
 
 Now you should be able to run and debug perl tests 

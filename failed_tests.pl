@@ -21,11 +21,11 @@ use Try::Tiny;
 my $poll_interval = 10;
 
 my $usage = <<USAGE
-Usage: $0 -L [number of runs to show] --git-repos=/home/you/git_repos --git-branch=master [-w]
+Usage: $0 -L [number of runs to show] --git-repos=/home/you/git_repos -b=master [-w]
 
 If git_repos is not provided, it will default to the value in the environment variable GIT_REPOS.
 
-If git_branch is not provided, the current branch will be used.
+If git_branch (b) is not provided, the current branch will be used.
 
 Passing -w or --watch starts the script in watch mode, and will poll the github API every $poll_interval seconds,
 showing any new results as they come in.
@@ -53,8 +53,7 @@ if ($opt->{help}) {
 
 die 'Must set $GIT_REPOS environment variable or use --git-repos' unless ($opt->{git_repos});
 
-# my $secure = path($opt->{git_repos})->child('secure');
-my $secure = path("/secure");
+my $secure = path($opt->{git_repos})->child('secure');
 
 my $agg_dir = $secure->child('failed_runs');
 $agg_dir->mkpath;

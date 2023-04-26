@@ -63,13 +63,15 @@ our $UTF8 = Encode::find_encoding('UTF-8');
 $opt->{git_branch} ||= `git -C $secure branch --show-current`;
 $opt->{git_branch} =~ s/\n//;
 
+my $repo = 'Spareroom/secure';
+
 if ($opt->{watch}) {
-    my $runs = get_runs(10, $opt->{git_branch});
+    my $runs = get_runs(10, $opt->{git_branch}, $repo);
     my $last_run_id = 0;
     for (@$runs) {
+        say print_run($_);
         if ($_->{status} eq 'completed') {
             $last_run_id = $_->{databaseId};
-            say print_run($_);
             last;
         }
     }
@@ -77,7 +79,7 @@ if ($opt->{watch}) {
     while (1) {
         sleep $poll_interval;
         try {
-            my $run = get_runs(1, $opt->{git_branch})->[0];
+            my $run = get_runs(1, $opt->{git_branch}, $repo)->[0];
             if (defined $run && $run->{status} eq 'completed') {
                 if ($run->{databaseId} != $last_run_id) {
                     $last_run_id = $run->{databaseId};
@@ -94,7 +96,7 @@ if ($opt->{amount_of_runs} == 1) {
     say STDERR "Fetching latest $opt->{amount_of_runs} runs for $opt->{git_branch}";
 }
 
-my $result = get_runs($opt->{amount_of_runs}, $opt->{git_branch});
+my $result = get_runs($opt->{amount_of_runs}, $opt->{git_branch}, $repo);
 
 sub print_run {
     my $run = shift;
@@ -116,11 +118,13 @@ sub print_run {
         my $agg_file = aggregate_file_to_create($run);
 
         if (!$agg_file->exists) {
-            my $failed = `gh run view $run->{databaseId} --log-failed` || '';
+            my $failed = `gh run view -R $repo $run->{databaseId} --log-failed`;
+            if ($? >> 8) {
+                print $failed;
+                die "Failed to get failed tests for run $run->{databaseId}";
+            }
             my @failed_tests = sort keys { (map {$_ => 1} ($failed =~ /\/secure\/(.*\.t\b)/g)) }->%*;
             write_aggregate($agg_file, $run, \@failed_tests);
-            # my $num_failed = scalar(@failed_tests);
-            # say colored(["bold red on_black"], "$num_failed failed tests");
         }
         $output .= " file://" . $agg_file;
     } else {
@@ -147,8 +151,8 @@ sub get_runs {
         workflowName
     );
 
-    my ($number_of_runs, $git_branch) = @_;
-    return decode_json $UTF8->encode(`gh run list -L $number_of_runs -b $git_branch -w "Perl Test Suite" --json $json_fields`);
+    my ($number_of_runs, $git_branch, $repo) = @_;
+    return decode_json $UTF8->encode(`gh run list -R $repo -L $number_of_runs -b $git_branch -w "Perl Test Suite (GCP)" --json $json_fields`);
 }
 
 sub _pretty_date {

@@ -123,8 +123,7 @@ sub print_run {
                 print $failed;
                 die "Failed to get failed tests for run $run->{databaseId}";
             }
-            my @failed_tests = sort keys { (map {$_ => 1} ($failed =~ /\/secure\/(.*\.t\b)/g)) }->%*;
-            write_aggregate($agg_file, $run, \@failed_tests);
+            write_aggregate($agg_file, $run, $failed);
         }
         $output .= " file://" . $agg_file;
     } else {
@@ -172,9 +171,28 @@ sub aggregate_file_to_create {
 }
 
 sub write_aggregate {
-    my ($agg_file, $run, $failed_tests) = @_;
-    my @non_aggs = grep {$_ !~ qr#/aggregate/#} @$failed_tests;
-    my $ft_string = join "\n", @non_aggs;
+    my ($agg_file, $run, $failed) = @_;
+
+    my @lines;
+    my %failed_tests;
+    for my $line (split /\n/, $failed) {
+        # The line starts with a bunch of crap so lets get rid of it:
+        $line =~ /\d{2}:\d{2}:\d{2}.\d+. (.*)/;
+        next unless $1;
+        push @lines, $1;
+
+        # Find any tests mentioned in the line and add them to the list of failed tests:
+        for ($line =~ /\/secure\/(.*\.t\b)/g) {
+            my $test = $1;
+            $failed_tests{$test} = 1 if (
+                $test !~ qr#/aggregate/#
+                && $secure->child($test)->exists
+            );
+        }
+    }
+    my $output = join "\n", @lines;
+
+    my $ft_string = join "\n", sort keys %failed_tests;
 
     path($agg_file)
         ->spew_utf8(
@@ -199,6 +217,11 @@ $ft_string
     quick_mocks   => [qw/testimonials build_and_send_email profile_photo xss xss_form/],
     test_warnings => 1
 );
+
+=head1 Output
+
+$output
+
 PERL5
     );
     return $agg_file;

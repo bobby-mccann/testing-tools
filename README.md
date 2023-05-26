@@ -66,9 +66,43 @@ To add external tools, go to Settings > External Tools
 
 ![img_6.png](images/img_6.png)
 
+## Live Templates
+
+```xml
+<template name="mock" value="my $$$MOCK_NAME$_mock = mock &quot;$PACKAGE_NAME$&quot; =&gt; (&#10;    override =&gt; [&#10;        $FUNCTION_NAME$ =&gt; sub {&#10;            $END$&#10;        }&#10;    ],&#10;    track =&gt; 1,&#10;);&#10;" description="mock" toReformat="false" toShortenFQNames="true">
+  <variable name="MOCK_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+  <variable name="PACKAGE_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+  <variable name="FUNCTION_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+  <context>
+    <option name="PERL5_TEST_FILE" value="true" />
+  </context>
+</template>
+<template name="timestone" value="for (t::time_stone(time =&gt; &quot;$YYYY$-$MM$-$DD$T$HH$:$MIN$:$SS$Z&quot;)) {&#10;    $SELECTION$$END$&#10;}" description="" toReformat="false" toShortenFQNames="true">
+  <variable name="YYYY" expression="" defaultValue="2023" alwaysStopAt="true" />
+  <variable name="MM" expression="" defaultValue="09" alwaysStopAt="true" />
+  <variable name="DD" expression="" defaultValue="01" alwaysStopAt="true" />
+  <variable name="HH" expression="" defaultValue="00" alwaysStopAt="true" />
+  <variable name="MIN" expression="" defaultValue="00" alwaysStopAt="true" />
+  <variable name="SS" expression="" defaultValue="00" alwaysStopAt="true" />
+  <context>
+    <option name="PERL5_TEST_FILE" value="true" />
+  </context>
+</template>
+<template name="st" value="subtest &quot;$NAME$&quot; =&gt; sub{&#10;    $SELECTION$$END$&#10;};" description="subtest" toReformat="true" toShortenFQNames="true">
+  <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+  <context />
+</template>
+<template name="lb" value="has $PROP_NAME$ =&gt; (is =&gt; 'ro', isa =&gt; '$PROP_TYPE$', lazy_build =&gt; 1);&#10;sub _build_$PROP_NAME$ {&#10;    $END$&#10;}" description="lazy builder" toReformat="true" toShortenFQNames="true">
+  <variable name="PROP_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+  <variable name="PROP_TYPE" expression="" defaultValue="" alwaysStopAt="true" />
+  <context>
+    <option name="PERL5_PREFIX" value="true" />
+  </context>
+</template>
+```
+
 ### TODO
 
-- Live templates
 - Code templates
 - 1Password setup
 - VPN connect

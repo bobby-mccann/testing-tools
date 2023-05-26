@@ -48,11 +48,14 @@ sub get_package_name {
 sub get_function_name {
     my $line_number = shift;
     my @lines = @_;
-    my $line = $lines[$line_number-1];
 
-    print $line;
-    $line =~ /.*(sub|has) (\S+)/;
-    return $2;
+    my $name;
+    for my $i (0..$line_number) {
+        my $line = $lines[$i];
+        $line =~ /.*(sub|has) (\S+)/;
+        $name = $2 if defined($2);
+    }
+    return $name;
 }
 
 sub get_test_directory {

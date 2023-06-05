@@ -21,29 +21,23 @@ use Try::Tiny;
 my $poll_interval = 10;
 
 my $usage = <<USAGE
-Usage: $0 -L [number of runs to show] --git-repos=/home/you/git_repos -b=master [-w]
+Usage: $0 --git-repos=/home/you/git_repos -b=[branch]
 
 If git_repos is not provided, it will default to the value in the environment variable GIT_REPOS.
 
 If git_branch (b) is not provided, the current branch will be used.
-
-Passing -w or --watch starts the script in watch mode, and will poll the github API every $poll_interval seconds,
-showing any new results as they come in.
 USAGE
 ;
 
 my $opt = {
-    amount_of_runs => 1,
-    git_repos      => $ENV{GIT_REPOS},
-    git_branch     => undef,
+    git_repos  => $ENV{GIT_REPOS},
+    git_branch => undef,
 };
 GetOptions(
     $opt,
-    'amount_of_runs|amount-of-runs|L=i',
     'git_repos|git-repos=s',
     'git_branch|git-branch|b=s',
     'help|usage',
-    'watch|w',
 );
 
 if ($opt->{help}) {
@@ -60,43 +54,44 @@ $agg_dir->mkpath;
 
 our $UTF8 = Encode::find_encoding('UTF-8');
 
-$opt->{git_branch} ||= `git -C $secure branch --show-current`;
-$opt->{git_branch} =~ s/\n//;
+my $branch = $opt->{git_branch} || current_git_branch();
 
 my $repo = 'Spareroom/secure';
 
-if ($opt->{watch}) {
-    my $runs = get_runs(10, $opt->{git_branch}, $repo);
-    my $last_run_id = 0;
-    for (@$runs) {
-        say print_run($_);
-        if ($_->{status} eq 'completed') {
-            $last_run_id = $_->{databaseId};
-            last;
+say STDERR "Watching $branch";
+my $runs = get_runs(10, $branch, $repo);
+my $last_run_id = 0;
+for (@$runs) {
+    say print_run($_);
+    if ($_->{status} eq 'completed') {
+        $last_run_id = $_->{databaseId};
+    }
+}
+
+while (1) {
+    sleep $poll_interval;
+    if (!$opt->{git_branch}) {
+        if ($branch ne current_git_branch()) {
+            say STDERR "Switched to branch " . current_git_branch();
+            $branch = current_git_branch();
         }
     }
-
-    while (1) {
-        sleep $poll_interval;
-        try {
-            my $run = get_runs(1, $opt->{git_branch}, $repo)->[0];
-            if (defined $run && $run->{status} eq 'completed') {
-                if ($run->{databaseId} != $last_run_id) {
-                    $last_run_id = $run->{databaseId};
-                    say print_run($run);
-                }
+    try {
+        my $run = get_runs(1, $branch, $repo)->[0];
+        if (defined $run && $run->{status} eq 'completed') {
+            if ($run->{databaseId} != $last_run_id) {
+                $last_run_id = $run->{databaseId};
+                say print_run($run);
             }
-        };
-    }
+        }
+    };
 }
 
-if ($opt->{amount_of_runs} == 1) {
-    say STDERR "Fetching latest run for $opt->{git_branch}";
-} else {
-    say STDERR "Fetching latest $opt->{amount_of_runs} runs for $opt->{git_branch}";
+sub current_git_branch {
+    my $gb ||= `git -C $secure branch --show-current`;
+    $gb =~ s/\n//;
+    return $gb;
 }
-
-my $result = get_runs($opt->{amount_of_runs}, $opt->{git_branch}, $repo);
 
 sub print_run {
     my $run = shift;
@@ -109,6 +104,7 @@ sub print_run {
     $output .= colored ['bold black on_yellow'], " $pretty_date ";
     $run->{short_hash} = substr $run->{headSha}, 0, 7; # short version of git hash is 7 chars
     $output .= colored ['bold black on_cyan'], " <$run->{short_hash}> ";
+    $output .= colored ['bold black on_blue'], " $run->{author} ";
 
     if ($run->{status} ne 'completed') {
         $output .= colored ['bold black on_yellow'], " … $title ";
@@ -150,8 +146,13 @@ sub get_runs {
         workflowName
     );
 
-    my ($number_of_runs, $git_branch, $repo) = @_;
-    return decode_json $UTF8->encode(`gh run list -R $repo -L $number_of_runs -b $git_branch -w "Perl Test Suite (GCP)" --json $json_fields`);
+    my ($number_of_runs, $git_branch, $gh_repo) = @_;
+
+    my @runs = @{decode_json($UTF8->encode(`gh run list -R $gh_repo -L $number_of_runs -b $git_branch -w "Perl Test Suite (GCP)" --json $json_fields`))};
+    for (@runs) {
+        $_->{author} = `git --git-dir=$secure/.git log -n 1 --pretty=format:"%an" $_->{headSha}`;
+    }
+    return [reverse @runs];
 }
 
 sub _pretty_date {
@@ -178,7 +179,7 @@ sub write_aggregate {
     for my $line (split /\n/, $failed) {
         # The line starts with a bunch of crap so lets get rid of it:
         $line =~ /\d{2}:\d{2}:\d{2}.\d+. (.*)/;
-        next unless $1;
+        next unless defined $1;
         push @lines, $1;
 
         # Find any tests mentioned in the line and add them to the list of failed tests:
@@ -226,5 +227,3 @@ PERL5
     );
     return $agg_file;
 }
-
-say(print_run($_)) for @$result;

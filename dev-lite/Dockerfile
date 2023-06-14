@@ -13,5 +13,3 @@ ENV SENTRY_LOG=0
 ENV NO_TEST_LIB=1
 
 ADD dot-my.cnf /root/.my.cnf
-
-RUN ln -s /intellijperl/home/bobby/Work/secure /secure

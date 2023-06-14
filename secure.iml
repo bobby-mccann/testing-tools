@@ -8,7 +8,6 @@
       <path value="file://$MODULE_DIR$/t/lib" type="perl-library" />
       <path value="file://$MODULE_DIR$/t/helpers" type="perl-library" />
       <path value="file://$MODULE_DIR$/perl_lib/5.32.1" type="perl-library" />
-      <path value="file://$MODULE_DIR$/t/helpers/SR" type="perl-library" />
       <path value="file://$MODULE_DIR$/l/london3/flatshare" type="perl-library" />
     </perl5>
     <content url="file://$MODULE_DIR$">

@@ -5,6 +5,7 @@
 
 export DEVELOPMENT=1
 export SR_ROOT=$GIT_REPOS
+export SENTRY_LOG=0
 
 alias srd="$GIT_REPOS/docker-development-environment/sr-docker.pl"
 alias failed_tests="$GIT_REPOS/testing-tools/failed_tests.pl"

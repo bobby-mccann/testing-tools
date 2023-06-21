@@ -101,6 +101,21 @@ To add external tools, go to Settings > External Tools
 </template>
 ```
 
+## TX File Watcher
+
+Set up this file watcher to automatically compile templates when you edit them.
+
+![img.png](img.png)
+
+```
+exec
+dev-box
+/secure/bin/build/template_compile/tx
+--only-files
+$FilePathRelativeToProjectRoot$
+--hide-progress-bar
+```
+
 ### TODO
 
 - Code templates

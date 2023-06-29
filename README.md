@@ -38,8 +38,6 @@ docker build dev-lite -t dev:lite
 docker-development-environment_spareroom
 --env
 SR_ROOT=/intellijperl/home/bobby/Work
---env
-NO_TEST_LIB=1
 ```
 
 Now you should be able to run and debug perl tests 

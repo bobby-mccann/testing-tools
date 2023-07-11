@@ -114,6 +114,18 @@ $FilePathRelativeToProjectRoot$
 --hide-progress-bar
 ```
 
+## IdeaVim Config
+
+Sync your changes to this repo:
+```shell
+cp ~/.ideavimrc $GIT_REPOS/testing-tools/$USER.ideavimrc
+```
+
+Get your ideavimrc:
+```shell
+cp $GIT_REPOS/testing-tools/$USER.ideavimrc ~/.ideavimrc
+```
+
 ### TODO
 
 - Code templates

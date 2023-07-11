@@ -22,14 +22,16 @@ set argtextobj
 set commentary
 set surround
 set textobj-entire
+set textobj-indent
 set visualbell
 
+Plug 'michaeljsmith/vim-indent-object'
 
-nnoremap ; A;<ESC>
+nmap <Leader>; A;<ESC>;
 
 let mapleader="\<Space>"
 
-imap <C-v> <ESC>:action EditorPaste<cr>i
+imap <C-v> <C-r>+
 
 " Leader mappings
 
@@ -52,7 +54,7 @@ nmap <Leader>d<Leader> :action Debug<cr>
 " Tests
 nmap <Leader>tt :action Tool_Spareroom_Create Test<cr>
 nmap <Leader>tf :action Tool_Spareroom_Show Failed Tests<cr>
-nmap <Leader>ts :e /secure/scratch.t<cr>
+nmap <Leader>ts :e /home/bobby/Work/secure/scratch.t<cr>
 
 " Git
 nmap <Leader>gb :action Git.Branches<cr>

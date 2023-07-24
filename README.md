@@ -10,6 +10,7 @@ Cmd+Shift+A (or Ctrl+Shift+A) and search for "Plugins", then search for "Perl".
 #### Replace your .idea/secure.iml with the one from this repository
 
 ```shell
+mkdir -p $SR_ROOT/secure/.idea
 cp $SR_ROOT/testing-tools/secure.iml $SR_ROOT/secure/.idea/secure.iml
 ```
 

@@ -51,6 +51,7 @@ my $secure = path($opt->{git_repos})->child('secure');
 
 my $agg_dir = $secure->child('failed_runs');
 $agg_dir->mkpath;
+$agg_dir->child('.gitignore')->spew(qq{*});
 
 our $UTF8 = Encode::find_encoding('UTF-8');
 

@@ -23,14 +23,14 @@ my $poll_interval = 10;
 my $usage = <<USAGE
 Usage: $0 --git-repos=/home/you/git_repos -b=[branch]
 
-If git_repos is not provided, it will default to the value in the environment variable GIT_REPOS.
+If git_repos is not provided, it will default to the value in the environment variable SR_ROOT.
 
 If git_branch (b) is not provided, the current branch will be used.
 USAGE
 ;
 
 my $opt = {
-    git_repos  => $ENV{GIT_REPOS},
+    git_repos  => $ENV{SR_ROOT},
     git_branch => undef,
 };
 GetOptions(
@@ -45,7 +45,7 @@ if ($opt->{help}) {
     exit;
 }
 
-die 'Must set $GIT_REPOS environment variable or use --git-repos' unless ($opt->{git_repos});
+die 'Must set $SR_ROOT environment variable or use --git-repos' unless ($opt->{git_repos});
 
 my $secure = path($opt->{git_repos})->child('secure');
 

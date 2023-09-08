@@ -47,12 +47,12 @@ right from the editor.
 ## [sr-bashrc.sh](sr-bashrc.sh)
 
 I have provided a bashrc file that provides many useful aliases.
-You must at least have `$GIT_REPOS` set to wherever you store your repos.
+You must at least have `$SR_ROOT` set to wherever you store your repos.
 Add the following to your .(ba|z)shrc:
 
 ```shell
-export GIT_REPOS=~/Work # Or whatever it is you use
-source $GIT_REPOS/testing-tools/sr-bashrc.sh
+export SR_ROOT=~/Work # Or whatever it is you use
+source $SR_ROOT/testing-tools/sr-bashrc.sh
 ```
 
 ## External Tools
@@ -119,12 +119,12 @@ $FilePathRelativeToProjectRoot$
 
 Sync your changes to this repo:
 ```shell
-cp ~/.ideavimrc $GIT_REPOS/testing-tools/$USER.ideavimrc
+cp ~/.ideavimrc $SR_ROOT/testing-tools/$USER.ideavimrc
 ```
 
 Get your ideavimrc:
 ```shell
-cp $GIT_REPOS/testing-tools/$USER.ideavimrc ~/.ideavimrc
+cp $SR_ROOT/testing-tools/$USER.ideavimrc ~/.ideavimrc
 ```
 
 ### TODO

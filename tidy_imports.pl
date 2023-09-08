@@ -6,8 +6,11 @@ my $is_import = 0;
 my @import_lines;
 my @non_import_lines;
 
-for (<>) {
-    if ( $_ =~ /^\s*use/ ) {
+my $file = shift;
+open(FH, '<', $file);
+
+for (<FH>) {
+    if ( $_ =~ /^\s*use\s/ ) {
         $is_import = 1;
         $_ =~ s/^\s*//;
     }
@@ -23,4 +26,8 @@ for (<>) {
         push @non_import_lines, $_;
     }
 }
-print(@import_lines, "\n", @non_import_lines);
+close;
+
+open (FH, '>', $file);
+print FH (@import_lines, "\n", @non_import_lines);
+close;
